@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shi.Ku.Dama Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #f5f3ef;
+    }
+    #chat {
+      max-width: 420px;
+      margin: auto;
+      padding: 12px;
+    }
+    #messages {
+      min-height: 300px;
+      margin-bottom: 10px;
+    }
+    .msg {
+      margin: 8px 0;
+      line-height: 1.4;
+    }
+    .user {
+      font-weight: bold;
+    }
+    input {
+      width: 75%;
+      padding: 8px;
+    }
+    button {
+      padding: 8px 12px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="chat">
+  <div id="messages"></div>
+  <input id="input" placeholder="Scrivi..." />
+  <button onclick="send()">Invia</button>
+</div>
+
+<script>
+async function send() {
+  const input = document.getElementById("input");
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = "";
+
+  const messages = document.getElementById("messages");
+  messages.innerHTML += `<div class="msg user">Tu: ${msg}</div>`;
+
+  try {
+    const res = await fetch("https://wix-chatbot-backend.onrender.com/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg })
+    });
+
+    const data = await res.json();
+    messages.innerHTML += `<div class="msg">Shi.Ku.Dama: ${data.reply}</div>`;
+  } catch (err) {
+    messages.innerHTML += `<div class="msg">Errore di connessione</div>`;
+  }
+
+  messages.scrollTop = messages.scrollHeight;
+}
+</script>
+
+</body>
+</html>
